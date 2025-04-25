@@ -1,4 +1,4 @@
-name = "xai-finance"
+name = "xai-finance-worker"
 compatibility_date = "2025-04-25"
 main = "index.js"
 
@@ -7,11 +7,10 @@ command = "pnpm run build"
 
 [site]
 bucket = ".next"
-entry-point = "."
 
 [env.production]
 routes = [
-  { pattern = "*/*", zone_name = "xai-finance" }
+  { pattern = "xai-finance.workers.dev/*", zone_name = "xai-finance" }
 ]
 
 [assets]
