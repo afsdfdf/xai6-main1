@@ -5,21 +5,18 @@ workers_dev = true
 route = ""
 zone_id = ""
 compatibility_date = "2025-04-25"
-main = "src/index.ts"
+main = "src/worker.ts"
 
 [build]
 command = "pnpm run build"
 
 [site]
-bucket = "./public"
+bucket = ".next/static"
 
 [env.production]
 routes = [
   { pattern = "xai-finance.workers.dev/*", zone_name = "xai-finance" }
 ]
-
-[assets]
-directory = ".next"
 
 [[kv_namespaces]]
 binding = "__STATIC_CONTENT"
