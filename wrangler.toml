@@ -1,6 +1,6 @@
 name = "xai-finance-worker"
 compatibility_date = "2025-04-25"
-main = "index.js"
+main = "src/index.ts"
 
 [build]
 command = "pnpm run build"
