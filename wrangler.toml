@@ -1,4 +1,9 @@
-name = "xai-finance-worker"
+name = "xai6-worker"
+type = "javascript"
+account_id = ""
+workers_dev = true
+route = ""
+zone_id = ""
 compatibility_date = "2025-04-25"
 main = "src/index.ts"
 
@@ -6,7 +11,7 @@ main = "src/index.ts"
 command = "pnpm run build"
 
 [site]
-bucket = ".next"
+bucket = "./public"
 
 [env.production]
 routes = [
@@ -14,4 +19,8 @@ routes = [
 ]
 
 [assets]
-directory = ".next" 
+directory = ".next"
+
+[[kv_namespaces]]
+binding = "__STATIC_CONTENT"
+id = "" 
