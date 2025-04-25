@@ -1,4 +1,4 @@
-name = "xai6-worker"
+name = "xai-finance"
 type = "javascript"
 account_id = ""
 workers_dev = true
