@@ -12,9 +12,6 @@ const nextConfig = {
   experimental: {
     webVitalsAttribution: ['CLS', 'LCP'],
   },
-  devIndicators: {
-    buildActivity: false,
-  },
 }
 
 export default nextConfig
