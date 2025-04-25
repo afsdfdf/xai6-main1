@@ -5,10 +5,13 @@ compatibility_date = "2025-04-25"
 command = "pnpm run build"
 
 [site]
-bucket = ".next/static"
+bucket = ".next"
 entry-point = "."
 
 [env.production]
 routes = [
   { pattern = "*/*", zone_name = "xai-finance" }
-] 
+]
+
+[assets]
+directory = ".next" 
