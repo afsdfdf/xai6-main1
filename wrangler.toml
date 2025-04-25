@@ -1,5 +1,6 @@
 name = "xai-finance"
 compatibility_date = "2025-04-25"
+main = "index.js"
 
 [build]
 command = "pnpm run build"
