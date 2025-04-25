@@ -1,7 +1,7 @@
 import { getAssetFromKV, serveSinglePageApp } from '@cloudflare/kv-asset-handler'
 
 interface Env {
-  __STATIC_CONTENT: KVNamespace
+  STATIC_CONTENT: KVNamespace
 }
 
 export default {
@@ -17,7 +17,7 @@ export default {
             waitUntil: ctx.waitUntil.bind(ctx),
           },
           {
-            ASSET_NAMESPACE: env.__STATIC_CONTENT,
+            ASSET_NAMESPACE: env.STATIC_CONTENT,
             ASSET_MANIFEST: {},
           }
         )
@@ -32,7 +32,7 @@ export default {
           waitUntil: ctx.waitUntil.bind(ctx),
         },
         {
-          ASSET_NAMESPACE: env.__STATIC_CONTENT,
+          ASSET_NAMESPACE: env.STATIC_CONTENT,
           ASSET_MANIFEST: {},
           mapRequestToAsset: serveSinglePageApp,
         }
