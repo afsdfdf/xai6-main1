@@ -1,10 +1,37 @@
 import { NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 
-// API key for Ave.ai
-const AVE_API_KEY = "NMUuJmYHJB6d91bIpgLqpuLLKYVws82lj0PeDP3UEb19FoyWFJUVGLsgE95XTEmA";
+// API key for Ave.ai - 应该从环境变量获取，避免在代码中硬编码
+const AVE_API_KEY = process.env.AVE_API_KEY || "NMUuJmYHJB6d91bIpgLqpuLLKYVws82lj0PeDP3UEb19FoyWFJUVGLsgE95XTEmA";
+
+// 缓存文件路径
+const CACHE_DIR = join(process.cwd(), 'cache');
+
+// 接口定义
+interface RankTopic {
+  id: string;
+  name_en: string;
+  name_zh: string;
+}
+
+interface TokenData {
+  token: string;
+  chain: string;
+  symbol: string;
+  name: string;
+  logo_url: string;
+  current_price_usd: number;
+  price_change_24h: number;
+  tx_volume_u_24h: number;
+  holders: number;
+  market_cap?: string;
+  fdv?: string;
+  risk_score?: string;
+}
 
 // 临时测试数据，在API调用失败时使用
-const dummyTopics = [
+const dummyTopics: RankTopic[] = [
   {
     "id": "hot",
     "name_en": "Hot",
@@ -22,7 +49,7 @@ const dummyTopics = [
   }
 ];
 
-const dummyTokens = Array(50).fill(0).map((_, index) => ({
+const dummyTokens: TokenData[] = Array(50).fill(0).map((_, index) => ({
   "token": `0xtoken${index}`,
   "chain": index % 2 === 0 ? "bsc" : "eth",
   "symbol": `TKN${index}`,
@@ -40,20 +67,70 @@ interface CacheItem {
   timestamp: number;
 }
 
-// 缓存对象，用于存储不同主题的数据
-const cache: Record<string, CacheItem> = {};
+// 内存缓存对象，用于存储不同主题的数据
+const memoryCache: Record<string, CacheItem> = {};
 
 // 缓存有效期（1小时，单位为毫秒）
-const CACHE_TTL = 60 * 60 * 1000;
+const CACHE_TTL = parseInt(process.env.CACHE_TTL_TOKENS || '3600000');
 
-// 检查缓存是否有效
-function isCacheValid(cacheKey: string): boolean {
-  if (!cache[cacheKey]) return false;
+/**
+ * 检查缓存是否有效
+ * @param cacheKey 缓存键
+ * @returns 缓存是否有效
+ */
+function isMemoryCacheValid(cacheKey: string): boolean {
+  if (!memoryCache[cacheKey]) return false;
   const now = Date.now();
-  return now - cache[cacheKey].timestamp < CACHE_TTL;
+  return now - memoryCache[cacheKey].timestamp < CACHE_TTL;
 }
 
-// 获取真实API数据
+/**
+ * 从文件系统读取缓存
+ * @param cacheKey 缓存键
+ * @returns 缓存数据或null
+ */
+async function readFileCache(cacheKey: string): Promise<any | null> {
+  try {
+    const filePath = join(CACHE_DIR, `${cacheKey}.json`);
+    const data = await fs.readFile(filePath, 'utf-8');
+    const cache = JSON.parse(data) as CacheItem;
+    
+    const now = Date.now();
+    if (now - cache.timestamp < CACHE_TTL) {
+      return cache.data;
+    }
+    
+    return null;
+  } catch (error) {
+    return null;
+  }
+}
+
+/**
+ * 写入文件系统缓存
+ * @param cacheKey 缓存键
+ * @param data 缓存数据
+ */
+async function writeFileCache(cacheKey: string, data: any): Promise<void> {
+  try {
+    const cache: CacheItem = {
+      data,
+      timestamp: Date.now()
+    };
+    
+    const filePath = join(CACHE_DIR, `${cacheKey}.json`);
+    await fs.mkdir(CACHE_DIR, { recursive: true });
+    await fs.writeFile(filePath, JSON.stringify(cache, null, 2), 'utf-8');
+  } catch (error) {
+    console.error(`Error writing file cache for ${cacheKey}:`, error);
+  }
+}
+
+/**
+ * 获取真实API数据
+ * @param endpoint API端点
+ * @returns API响应数据
+ */
 async function fetchAveApiData(endpoint: string) {
   console.log(`Fetching data from: ${endpoint}`);
   try {
@@ -80,8 +157,12 @@ async function fetchAveApiData(endpoint: string) {
   }
 }
 
-// 将API返回的代币数据转换为我们需要的格式
-function transformTokenData(apiData: any[]): any[] {
+/**
+ * 将API返回的代币数据转换为我们需要的格式
+ * @param apiData API返回的数据
+ * @returns 转换后的数据
+ */
+function transformTokenData(apiData: any[]): TokenData[] {
   return apiData.map(token => {
     // 尝试从appendix解析额外信息
     let tokenName = token.symbol || "";
@@ -125,10 +206,22 @@ export async function GET(request: Request) {
     if (topic === 'topics') {
       const cacheKey = 'topics';
       
-      // 检查缓存是否有效
-      if (isCacheValid(cacheKey)) {
-        console.log("Returning cached topics data");
-        return NextResponse.json({ topics: cache[cacheKey].data }, { status: 200 });
+      // 检查内存缓存是否有效
+      if (isMemoryCacheValid(cacheKey)) {
+        console.log("Returning cached topics data from memory");
+        return NextResponse.json({ topics: memoryCache[cacheKey].data }, { status: 200 });
+      }
+      
+      // 检查文件缓存
+      const fileCache = await readFileCache(cacheKey);
+      if (fileCache) {
+        console.log("Returning cached topics data from file");
+        // 同时更新内存缓存
+        memoryCache[cacheKey] = {
+          data: fileCache,
+          timestamp: Date.now()
+        };
+        return NextResponse.json({ topics: fileCache }, { status: 200 });
       }
       
       console.log("Fetching fresh topics data from Ave.ai API");
@@ -142,11 +235,14 @@ export async function GET(request: Request) {
           throw new Error('Invalid response format or unsuccessful request');
         }
         
-        // 更新缓存
-        cache[cacheKey] = {
+        // 更新内存缓存
+        memoryCache[cacheKey] = {
           data: data.data,
           timestamp: Date.now()
         };
+        
+        // 更新文件缓存
+        await writeFileCache(cacheKey, data.data);
         
         console.log("Returning fresh topics data and updating cache");
         return NextResponse.json({ topics: data.data }, { status: 200 });
@@ -154,7 +250,7 @@ export async function GET(request: Request) {
         console.error("Error fetching from Ave.ai, using dummy data:", apiError);
         
         // 如果API调用失败，使用测试数据
-        cache[cacheKey] = {
+        memoryCache[cacheKey] = {
           data: dummyTopics,
           timestamp: Date.now()
         };
@@ -166,12 +262,27 @@ export async function GET(request: Request) {
     else {
       const cacheKey = `tokens_${topic}`;
       
-      // 检查缓存是否有效
-      if (isCacheValid(cacheKey)) {
-        console.log(`Returning cached tokens data for topic: ${topic}`);
+      // 检查内存缓存是否有效
+      if (isMemoryCacheValid(cacheKey)) {
+        console.log(`Returning cached tokens data for topic: ${topic} from memory`);
         return NextResponse.json({ 
           topic: topic,
-          tokens: cache[cacheKey].data 
+          tokens: memoryCache[cacheKey].data 
+        }, { status: 200 });
+      }
+      
+      // 检查文件缓存
+      const fileCache = await readFileCache(cacheKey);
+      if (fileCache) {
+        console.log(`Returning cached tokens data for topic: ${topic} from file`);
+        // 同时更新内存缓存
+        memoryCache[cacheKey] = {
+          data: fileCache,
+          timestamp: Date.now()
+        };
+        return NextResponse.json({ 
+          topic: topic,
+          tokens: fileCache 
         }, { status: 200 });
       }
       
@@ -190,11 +301,14 @@ export async function GET(request: Request) {
         // 转换数据格式
         const transformedData = transformTokenData(data.data);
         
-        // 更新缓存
-        cache[cacheKey] = {
+        // 更新内存缓存
+        memoryCache[cacheKey] = {
           data: transformedData,
           timestamp: Date.now()
         };
+        
+        // 更新文件缓存
+        await writeFileCache(cacheKey, transformedData);
         
         console.log(`Returning fresh tokens data for topic: ${topic} and updating cache`);
         return NextResponse.json({ 
@@ -205,7 +319,7 @@ export async function GET(request: Request) {
         console.error(`Error fetching from Ave.ai for topic ${topic}, using dummy data:`, apiError);
         
         // 如果API调用失败，使用测试数据
-        cache[cacheKey] = {
+        memoryCache[cacheKey] = {
           data: dummyTokens,
           timestamp: Date.now()
         };
@@ -221,14 +335,14 @@ export async function GET(request: Request) {
     
     // 如果有缓存但已过期，仍然可以在API失败时返回过期的缓存数据
     const cacheKey = topic === 'topics' ? 'topics' : `tokens_${topic}`;
-    if (cache[cacheKey]) {
+    if (memoryCache[cacheKey]) {
       console.log(`API request failed, returning stale cache for ${cacheKey}`);
       if (topic === 'topics') {
-        return NextResponse.json({ topics: cache[cacheKey].data }, { status: 200 });
+        return NextResponse.json({ topics: memoryCache[cacheKey].data }, { status: 200 });
       } else {
         return NextResponse.json({ 
           topic: topic,
-          tokens: cache[cacheKey].data 
+          tokens: memoryCache[cacheKey].data 
         }, { status: 200 });
       }
     }

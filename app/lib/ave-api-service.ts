@@ -1,5 +1,8 @@
 // Ave.ai API服务
+import { apiRequest, buildUrl } from './api-utils';
 
+// API密钥应从环境变量获取，不应硬编码
+// TODO: 将API密钥移至服务端API路由，不在客户端暴露
 const AVE_API_KEY = process.env.AVE_API_KEY || "NMUuJmYHJB6d91bIpgLqpuLLKYVws82lj0PeDP3UEb19FoyWFJUVGLsgE95XTEmA"
 
 export interface TokenPrice {
@@ -41,57 +44,85 @@ export interface KLineData {
   volume: number;
 }
 
+// API响应接口定义
+export interface SearchTokensResponse {
+  success: boolean;
+  tokens: TokenPrice[];
+  count: number;
+  keyword?: string;
+  chain?: string;
+  error?: string;
+  message?: string;
+}
+
+export interface TokenDetailsResponse {
+  success: boolean;
+  symbol: string;
+  name: string;
+  address: string;
+  logo: string;
+  price: number;
+  priceChange: number;
+  priceChange24h: number;
+  volume24h: number;
+  marketCap: number;
+  totalSupply: number;
+  holders: number;
+  lpAmount: number;
+  lockPercent: number;
+  chain: string;
+  error?: string;
+  message?: string;
+}
+
+export interface TokenKlineResponse {
+  success: boolean;
+  klineData: {
+    time: number;
+    open: string;
+    high: string;
+    low: string;
+    close: string;
+    volume: string;
+  }[];
+  error?: string;
+  message?: string;
+}
+
+export interface TokenTransactionsResponse {
+  success: boolean;
+  transactions: any[];
+  error?: string;
+  message?: string;
+}
+
 /**
  * 搜索代币
  * @param keyword 搜索关键词
  * @param chain 可选的链名称
  */
-export async function searchTokens(keyword: string, chain?: string): Promise<any[]> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
-
+export async function searchTokens(keyword: string, chain?: string): Promise<TokenPrice[]> {
   try {
-    // 使用相对路径确保在各种环境中都能正常工作
-    const url = new URL('/api/search-tokens', window.location.origin);
-    url.searchParams.append('keyword', keyword);
-    if (chain) url.searchParams.append('chain', chain);
-
-    console.log('Searching tokens with URL:', url.toString());
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Accept': '*/*'
-      },
-      signal: controller.signal
+    const params: Record<string, string | undefined> = {
+      keyword,
+      chain
+    };
+    
+    const url = buildUrl('/api/search-tokens', params);
+    console.log('Searching tokens with URL:', url);
+    
+    const response = await apiRequest<SearchTokensResponse>(url, {
+      timeout: 10000,
+      retries: 1
     });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      console.error(`API请求失败: ${response.status} - ${response.statusText}`);
-      throw new Error(`API请求失败，状态码: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Search response:', data);
     
-    if (!data.success) {
-      console.error('搜索请求失败:', data.error || '未知错误');
-      throw new Error(data.error || '搜索请求失败');
+    if (!response.success) {
+      throw new Error(response.error || '搜索请求失败');
     }
     
-    return data.tokens || [];
-  } catch (error: any) {
-    clearTimeout(timeoutId);
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.error('搜索请求超时');
-        return [];
-      }
-      console.error('搜索代币错误:', error.message);
-    } else {
-      console.error('搜索代币发生未知错误', error);
-    }
+    return response.tokens || [];
+  } catch (error) {
+    console.error('搜索代币错误:', error);
     return [];
   }
 }
@@ -102,67 +133,48 @@ export async function searchTokens(keyword: string, chain?: string): Promise<any
  * @param chain 区块链名称
  */
 export async function getTokenDetails(address: string, chain: string): Promise<TokenDetails | null> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超时
-
   try {
-    // 使用API路由转发请求，确保可以在Vercel上正常工作
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-    const url = `${apiUrl}/api/token-details?address=${encodeURIComponent(address)}&chain=${encodeURIComponent(chain)}`;
+    const params = {
+      address: encodeURIComponent(address),
+      chain: encodeURIComponent(chain)
+    };
     
-    const response = await fetch(url, {
-      signal: controller.signal,
+    const url = buildUrl('/api/token-details', params);
+    
+    const response = await apiRequest<TokenDetailsResponse>(url, {
+      timeout: 15000,
       next: { revalidate: 60 } // 缓存一分钟
     });
     
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      console.error(`获取代币详情请求失败: ${response.status} - ${response.statusText}`);
-      throw new Error(`API请求失败，状态码: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (!data.success) {
-      console.error('获取代币详情失败:', data.error || '未知错误');
-      throw new Error(data.error || '获取代币详情失败');
+    if (!response.success) {
+      throw new Error(response.error || '获取代币详情失败');
     }
     
     return {
       tokenInfo: {
-        symbol: data.symbol || '',
-        name: data.name || '',
-        address: data.address || '',
-        logo_url: data.logo || '',
-        price: data.price || 0,
-        priceChange24h: data.priceChange24h || 0,
-        volume24h: data.volume24h || 0,
-        marketCap: data.marketCap || 0,
-        holders: data.holders || 0,
-        chain: data.chain || '',
-        token: data.address || '',
+        symbol: response.symbol || '',
+        name: response.name || '',
+        address: response.address || '',
+        logo_url: response.logo || '',
+        price: response.price || 0,
+        priceChange24h: response.priceChange24h || 0,
+        volume24h: response.volume24h || 0,
+        marketCap: response.marketCap || 0,
+        holders: response.holders || 0,
+        chain: response.chain || '',
+        token: response.address || '',
       },
-      price: data.price || 0,
-      priceChange: data.priceChange || 0,
-      volume24h: data.volume24h || 0,
-      marketCap: data.marketCap || 0,
-      totalSupply: data.totalSupply || 0,
-      holders: data.holders || 0,
-      lpAmount: data.lpAmount || 0,
-      lockPercent: data.lockPercent || 0,
+      price: response.price || 0,
+      priceChange: response.priceChange || 0,
+      volume24h: response.volume24h || 0,
+      marketCap: response.marketCap || 0,
+      totalSupply: response.totalSupply || 0,
+      holders: response.holders || 0,
+      lpAmount: response.lpAmount || 0,
+      lockPercent: response.lockPercent || 0,
     };
-  } catch (error: any) {
-    clearTimeout(timeoutId);
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.error('获取代币详情请求超时');
-      } else {
-        console.error('获取代币详情错误:', error.message);
-      }
-    } else {
-      console.error('获取代币详情发生未知错误', error);
-    }
+  } catch (error) {
+    console.error('获取代币详情错误:', error);
     return null;
   }
 }
@@ -180,34 +192,26 @@ export async function getTokenKlineData(
   interval: string = '1d',
   limit: number = 100
 ): Promise<KLineData[]> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超时
-
   try {
-    // 使用API路由转发请求，确保可以在Vercel上正常工作
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-    const url = `${apiUrl}/api/token-kline?address=${encodeURIComponent(address)}&chain=${encodeURIComponent(chain)}&interval=${encodeURIComponent(interval)}&limit=${limit}`;
+    const params = {
+      address: encodeURIComponent(address),
+      chain: encodeURIComponent(chain),
+      interval: encodeURIComponent(interval),
+      limit: String(limit)
+    };
     
-    const response = await fetch(url, {
-      signal: controller.signal,
+    const url = buildUrl('/api/token-kline', params);
+    
+    const response = await apiRequest<TokenKlineResponse>(url, {
+      timeout: 15000,
       next: { revalidate: 60 } // 缓存一分钟
     });
     
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      console.error(`获取K线数据请求失败: ${response.status} - ${response.statusText}`);
-      throw new Error(`API请求失败，状态码: ${response.status}`);
+    if (!response.success) {
+      throw new Error(response.error || '获取K线数据失败');
     }
     
-    const data = await response.json();
-    
-    if (!data.success) {
-      console.error('获取K线数据失败:', data.error || '未知错误');
-      throw new Error(data.error || '获取K线数据失败');
-    }
-    
-    return data.klineData.map((item: any) => ({
+    return response.klineData.map(item => ({
       time: item.time,
       open: parseFloat(item.open),
       high: parseFloat(item.high),
@@ -215,17 +219,8 @@ export async function getTokenKlineData(
       close: parseFloat(item.close),
       volume: parseFloat(item.volume),
     }));
-  } catch (error: any) {
-    clearTimeout(timeoutId);
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.error('获取K线数据请求超时');
-      } else {
-        console.error('获取K线数据错误:', error.message);
-      }
-    } else {
-      console.error('获取K线数据发生未知错误', error);
-    }
+  } catch (error) {
+    console.error('获取K线数据错误:', error);
     return [];
   }
 }
@@ -241,45 +236,27 @@ export async function getTokenTransactions(
   chain: string, 
   limit: number = 20
 ): Promise<any[]> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 15000); // 15秒超时
-
   try {
-    // 使用API路由转发请求，确保可以在Vercel上正常工作
-    const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-    const url = `${apiUrl}/api/token-transactions?address=${encodeURIComponent(address)}&chain=${encodeURIComponent(chain)}&limit=${limit}`;
+    const params = {
+      address: encodeURIComponent(address),
+      chain: encodeURIComponent(chain),
+      limit: String(limit)
+    };
     
-    const response = await fetch(url, {
-      signal: controller.signal,
+    const url = buildUrl('/api/token-transactions', params);
+    
+    const response = await apiRequest<TokenTransactionsResponse>(url, {
+      timeout: 15000,
       next: { revalidate: 300 } // 缓存5分钟
     });
     
-    clearTimeout(timeoutId);
-    
-    if (!response.ok) {
-      console.error(`获取交易历史请求失败: ${response.status} - ${response.statusText}`);
-      throw new Error(`API请求失败，状态码: ${response.status}`);
+    if (!response.success) {
+      throw new Error(response.error || '获取交易历史失败');
     }
     
-    const data = await response.json();
-    
-    if (!data.success) {
-      console.error('获取交易历史失败:', data.error || '未知错误');
-      throw new Error(data.error || '获取交易历史失败');
-    }
-    
-    return data.transactions;
-  } catch (error: any) {
-    clearTimeout(timeoutId);
-    if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        console.error('获取交易历史请求超时');
-      } else {
-        console.error('获取交易历史错误:', error.message);
-      }
-    } else {
-      console.error('获取交易历史发生未知错误', error);
-    }
+    return response.transactions;
+  } catch (error) {
+    console.error('获取交易历史错误:', error);
     return [];
   }
 } 
