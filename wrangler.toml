@@ -1,0 +1,19 @@
+name = "xai-finance"
+compatibility_date = "2025-04-25"
+main = "src/worker.ts"
+
+[build]
+command = "pnpm run build"
+
+[site]
+bucket = ".next"
+exclude = ["cache/webpack/client-production/*.pack", "cache/webpack/server-production/*.pack"]
+
+[env.production]
+routes = [
+  { pattern = "xai-finance.workers.dev/*", zone_name = "xai-finance" }
+]
+
+[[kv_namespaces]]
+binding = "STATIC_CONTENT"
+id = "82142229e1314340b69c1622bb5282f8"
