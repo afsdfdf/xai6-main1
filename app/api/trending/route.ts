@@ -731,7 +731,7 @@ function generateMockData() {
 export async function GET() {
   try {
     // 从 crypto API 获取热门代币
-    const response = await fetch("http://localhost:3003/api/crypto", {
+    const response = await fetch("/api/crypto", {
       method: "GET",
       headers: {
         Accept: "application/json",
