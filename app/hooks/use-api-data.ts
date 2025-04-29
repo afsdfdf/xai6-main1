@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getUserFriendlyErrorMessage } from '@/app/lib/api-utils';
 
 interface UseApiDataOptions<T> {
@@ -41,6 +41,14 @@ export function useApiData<T>(
   const [isLoading, setIsLoading] = useState(fetchOnMount && autoFetch);
   const [error, setError] = useState<string | null>(null);
   const [lastFetched, setLastFetched] = useState<number | null>(null);
+  
+  // 使用useRef来存储fetchFn，避免它导致useEffect无限循环
+  const fetchFnRef = useRef(fetchFn);
+  
+  // 每次fetchFn改变时更新ref
+  useEffect(() => {
+    fetchFnRef.current = fetchFn;
+  }, [fetchFn]);
 
   // 检查本地缓存
   const checkCache = useCallback(() => {
@@ -102,7 +110,7 @@ export function useApiData<T>(
       }
       
       // 获取新数据
-      const result = await fetchFn();
+      const result = await fetchFnRef.current();
       
       // 更新状态
       setData(result);
@@ -118,7 +126,7 @@ export function useApiData<T>(
     } finally {
       setIsLoading(false);
     }
-  }, [fetchFn, cacheKey, checkCache, updateCache]);
+  }, [cacheKey, checkCache, updateCache]);
 
   // 刷新数据
   const refresh = useCallback(() => {
@@ -130,7 +138,8 @@ export function useApiData<T>(
     if (autoFetch) {
       fetchData();
     }
-  }, [...deps, fetchData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps]); // 这里删除fetchData依赖，避免无限循环
 
   return {
     data,
@@ -166,6 +175,14 @@ export function usePaginatedData<T>(
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // 使用useRef来存储fetchFn
+  const fetchFnRef = useRef(fetchFn);
+  
+  // 每次fetchFn改变时更新ref
+  useEffect(() => {
+    fetchFnRef.current = fetchFn;
+  }, [fetchFn]);
 
   // 获取数据
   const fetchData = useCallback(async () => {
@@ -173,7 +190,7 @@ export function usePaginatedData<T>(
     setError(null);
     
     try {
-      const result = await fetchFn(page, pageSize);
+      const result = await fetchFnRef.current(page, pageSize);
       setData(result.data);
       setTotal(result.total);
     } catch (err) {
@@ -182,7 +199,7 @@ export function usePaginatedData<T>(
     } finally {
       setIsLoading(false);
     }
-  }, [fetchFn, page, pageSize]);
+  }, [page, pageSize]);
 
   // 翻页
   const goToPage = useCallback((newPage: number) => {
@@ -202,7 +219,8 @@ export function usePaginatedData<T>(
   // 依赖项变化或组件挂载时获取数据
   useEffect(() => {
     fetchData();
-  }, [page, pageSize, ...deps, fetchData]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, ...deps]); // 这里删除fetchData依赖，避免无限循环
 
   return {
     data,

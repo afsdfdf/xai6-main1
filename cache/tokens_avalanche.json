@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "token": "0x420fca0121dc28039145009570975747295f2329",
+      "chain": "avalanche",
+      "symbol": "COQ",
+      "name": "COQ",
+      "logo_url": "https://www.iconaves.com/token_icon/avalanche/0x420fca0121dc28039145009570975747295f2329.png",
+      "current_price_usd": 6.45609454112407e-7,
+      "price_change_24h": -4.89,
+      "tx_volume_u_24h": 209055.389751,
+      "holders": 94120,
+      "market_cap": "44818208.304483293940000000000",
+      "fdv": "44818208.304483293940000000000",
+      "risk_score": "40"
+    },
+    {
+      "token": "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590",
+      "chain": "avalanche",
+      "symbol": "STG",
+      "name": "STG",
+      "logo_url": "https://www.iconaves.com/token_icon/avalanche/0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590.png",
+      "current_price_usd": 0.21211676425309856,
+      "price_change_24h": 3.48,
+      "tx_volume_u_24h": 49366.817352,
+      "holders": 149382,
+      "market_cap": "2537431.43012675462828362731199424",
+      "fdv": "2537431.43012675462828362731199424",
+      "risk_score": "55"
+    },
+    {
+      "token": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
+      "chain": "avalanche",
+      "symbol": "JOE",
+      "name": "JOE",
+      "logo_url": "https://www.iconaves.com/token_icon/avalanche/0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd.png",
+      "current_price_usd": 0.18757484690429344,
+      "price_change_24h": -1.68,
+      "tx_volume_u_24h": 35809.205169,
+      "holders": 148132,
+      "market_cap": "93748545.950125844402329057605184",
+      "fdv": "93748545.950125844402329057605184",
+      "risk_score": "55"
+    },
+    {
+      "token": "0x184ff13b3ebcb25be44e860163a5d8391dd568c1",
+      "chain": "avalanche",
+      "symbol": "KIMBO",
+      "name": "KIMBO",
+      "logo_url": "https://www.iconaves.com/token_icon/avalanche/0x184ff13b3ebcb25be44e860163a5d8391dd568c1.png",
+      "current_price_usd": 0.000024366279311294386,
+      "price_change_24h": 0.01,
+      "tx_volume_u_24h": 13364.78534,
+      "holders": 18547,
+      "market_cap": "1691507.109790056276120000000",
+      "fdv": "1691507.109790056276120000000",
+      "risk_score": "40"
+    },
+    {
+      "token": "0xec3492a2508ddf4fdc0cd76f31f340b30d1793e6",
+      "chain": "avalanche",
+      "symbol": "CLY",
+      "name": "CLY",
+      "logo_url": "https://www.iconaves.com/token_icon/avalanche/0xec3492a2508ddf4fdc0cd76f31f340b30d1793e6.png",
+      "current_price_usd": 0.07969180779498185,
+      "price_change_24h": -1.37,
+      "tx_volume_u_24h": 10545.430675,
+      "holders": 14711,
+      "market_cap": "11953771.16924727750000000",
+      "fdv": "11953771.16924727750000000",
+      "risk_score": "40"
+    }
+  ],
+  "timestamp": 1745957915606
+}
