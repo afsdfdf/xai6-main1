@@ -1,13 +1,13 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-import requests
+from flask import Flask, jsonify, request # type: ignore
+from flask_cors import CORS # type: ignore
+import requests # type: ignore
 import logging
 import time
 import json
 import random
 import os
 import threading
-import schedule
+import schedule # type: ignore
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes

@@ -1,0 +1,103 @@
+{
+  "data": [
+    {
+      "token": "0xb5c064f955d8e7f38fe0460c556a72987494ee17",
+      "chain": "polygon",
+      "symbol": "QUICK",
+      "name": "QUICK",
+      "logo_url": "https://www.iconaves.com/token_icon/polygon/0xb5c064f955d8e7f38fe0460c556a72987494ee17.png",
+      "current_price_usd": 0.02414210886288739,
+      "price_change_24h": -0.06,
+      "tx_volume_u_24h": 158069.018024,
+      "holders": 49261,
+      "market_cap": "20457395.81163890150211415985125071691351299",
+      "fdv": "20457395.81163890150211415985125071691351299",
+      "risk_score": "40"
+    },
+    {
+      "token": "0x65e5ea802db2ac6baf4c44c77b7e26db2f99823a",
+      "chain": "polygon",
+      "symbol": "EBC",
+      "name": "EBC",
+      "logo_url": "https://www.iconaves.com/token_icon_request/67d3db405ed7906575111a86_1741937473.png",
+      "current_price_usd": 3.367453400200602,
+      "price_change_24h": 0.11,
+      "tx_volume_u_24h": 132293.841075,
+      "holders": 1790,
+      "market_cap": "2693962720.160481600000000",
+      "fdv": "2693962720.160481600000000",
+      "risk_score": "40"
+    },
+    {
+      "token": "0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f",
+      "chain": "polygon",
+      "symbol": "VOXEL",
+      "name": "VOXEL",
+      "logo_url": "https://www.iconaves.com/token_icon/polygon/0xd0258a3fd00f38aa8090dfee343f10a9d4d30d3f.png",
+      "current_price_usd": 0.08174639853020474,
+      "price_change_24h": 6.6,
+      "tx_volume_u_24h": 71591.416662,
+      "holders": 105475,
+      "market_cap": "24523919.55906142200000000",
+      "fdv": "24523919.55906142200000000",
+      "risk_score": "40"
+    },
+    {
+      "token": "0x0bc7ac7d9f591fb139bdee2ec908af59cce5f2a0",
+      "chain": "polygon",
+      "symbol": "BTTP",
+      "name": "BTTP",
+      "logo_url": "https://www.iconaves.com/token_icon_request/67f4b089813ccbfc5fe8252c_1744089225.png",
+      "current_price_usd": 3.18515861107637,
+      "price_change_24h": 1.8,
+      "tx_volume_u_24h": 41801.386901,
+      "holders": 29119,
+      "market_cap": "68722160.226108418304173717785716",
+      "fdv": "68722160.226108418304173717785716",
+      "risk_score": "20"
+    },
+    {
+      "token": "0x5ec03c1f7fa7ff05ec476d19e34a22eddb48acdc",
+      "chain": "polygon",
+      "symbol": "ZED",
+      "name": "ZED",
+      "logo_url": "https://www.iconaves.com/token_icon/polygon/0x5ec03c1f7fa7ff05ec476d19e34a22eddb48acdc.png",
+      "current_price_usd": 0.0074834713571626426,
+      "price_change_24h": -0.04,
+      "tx_volume_u_24h": 27489.312724,
+      "holders": 18476,
+      "market_cap": "7483116.7553188183291368249268604981292408286",
+      "fdv": "7483116.7553188183291368249268604981292408286",
+      "risk_score": "55"
+    },
+    {
+      "token": "0xac0f66379a6d7801d7726d5a943356a172549adb",
+      "chain": "polygon",
+      "symbol": "GEOD",
+      "name": "GEOD",
+      "logo_url": "https://www.iconaves.com/token_icon/polygon/0xac0f66379a6d7801d7726d5a943356a172549adb.png",
+      "current_price_usd": 0.21873445420137508,
+      "price_change_24h": -1.07,
+      "tx_volume_u_24h": 20736.118788,
+      "holders": 15421,
+      "market_cap": "218734454.20137508000000000",
+      "fdv": "218734454.20137508000000000",
+      "risk_score": "55"
+    },
+    {
+      "token": "0x831753dd7087cac61ab5644b308642cc1c33dc13",
+      "chain": "polygon",
+      "symbol": "QUICK",
+      "name": "QUICK",
+      "logo_url": "https://www.iconaves.com/token_icon/polygon/0x831753dd7087cac61ab5644b308642cc1c33dc13.png",
+      "current_price_usd": 25.123183987066007,
+      "price_change_24h": -0.3,
+      "tx_volume_u_24h": 13040.405519116157,
+      "holders": 87973,
+      "market_cap": "6835167.655758155327696840247913726432453",
+      "fdv": "6835167.655758155327696840247913726432453",
+      "risk_score": "40"
+    }
+  ],
+  "timestamp": 1745949356758
+}

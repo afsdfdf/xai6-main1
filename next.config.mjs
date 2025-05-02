@@ -7,7 +7,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: false,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -39,7 +39,15 @@ const nextConfig = {
         hostname: 'example.com',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: '**',
+        pathname: '**',
+      }
     ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
     webVitalsAttribution: ['CLS', 'LCP'],

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; }
+        .card { background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .card img { width: 100px; height: 100px; object-fit: contain; border: 1px solid #eee; }
+        h3 { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <h1>Image Test Page</h1>
+    
+    <h2>Problem Images</h2>
+    <div class="container">
+        <div class="card">
+            <img src="/web3/images/logos/pancakeswap.png" alt="Pancakeswap">
+            <h3>pancakeswap.png</h3>
+        </div>
+        <div class="card">
+            <img src="/web3/images/logos/lido.png" alt="Lido">
+            <h3>lido.png</h3>
+        </div>
+        <div class="card">
+            <img src="/web3/images/logos/axieinfinity.png" alt="Axie Infinity">
+            <h3>axieinfinity.png</h3>
+        </div>
+    </div>
+
+    <h2>Control Images (Should Work)</h2>
+    <div class="container">
+        <div class="card">
+            <img src="/web3/images/logos/uniswap.png" alt="Uniswap">
+            <h3>uniswap.png</h3>
+        </div>
+        <div class="card">
+            <img src="/web3/images/logos/generic.png" alt="Generic">
+            <h3>generic.png</h3>
+        </div>
+    </div>
+
+    <h2>Testing Absolute Paths</h2>
+    <div class="container">
+        <div class="card">
+            <img src="/web3/images/logos/pancakeswap.png" alt="Pancakeswap">
+            <h3>Absolute: pancakeswap.png</h3>
+        </div>
+        <div class="card">
+            <img src="web3/images/logos/pancakeswap.png" alt="Pancakeswap">
+            <h3>Relative: pancakeswap.png</h3>
+        </div>
+    </div>
+
+    <h2>Banner Images Test</h2>
+    <div class="container">
+        <div class="card" style="width: 300px;">
+            <img src="/web3/images/banners/default.jpg" alt="Default Banner" style="width: 280px; height: 150px;">
+            <h3>default.jpg</h3>
+        </div>
+    </div>
+</body>
+</html> 

@@ -3,51 +3,87 @@
 # dependencies
 node_modules/
 .pnpm-store/
+.yarn/
+.yarnrc.yml
 
 # Python virtual environment
 venv/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# test directories
-/coverage
-
-# next.js
-/.next/
+# Next.js build output
+.next/
 out/
 
-# production
+# Production build
 /build
 
 # miscellaneous
 .DS_Store
 *.pem
+Thumbs.db
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 
-# debug
+# debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+debug.log
+*.log
 
-# env files
+# local env files
 .env*.local
 .env
+.env.test
 
-# vercel
+# Vercel
 .vercel
+
+# Turbo
+.turbo
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# test files
-test-*.js
-test-*.mjs
-test-*.ts
+# testing
+/coverage
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/cypress/videos/
+/cypress/screenshots/
 
-# temporary files
+# temp directories and files
+/temp/
+/tmp/
 *.tmp
 *.temp
+.cache/
+.temp/
+temp_next/
 
 # Editor directories and files
 .idea/
@@ -58,10 +94,6 @@ test-*.ts
 *.sln
 *.sw?
 
-# OS generated files
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Project specific
+api_server_backup.py
+api_server.bak

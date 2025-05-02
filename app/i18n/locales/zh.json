@@ -1,0 +1,52 @@
+{
+  "common": {
+    "appName": "XAI 金融",
+    "loading": "加载中",
+    "error": "错误",
+    "success": "成功"
+  },
+  "error": {
+    "loadFailed": "数据加载失败",
+    "apiUnavailable": "无法从服务器获取最新代币数据，可能由于网络问题或API服务暂时不可用",
+    "apiRequestFailed": "API请求失败，状态码: {{status}}",
+    "invalidApiFormat": "API返回数据格式无效，无法加载代币信息",
+    "topicsLoadFailed": "加载主题失败"
+  },
+  "action": {
+    "reload": "重新加载",
+    "refresh": "刷新",
+    "refreshing": "刷新中",
+    "save": "保存",
+    "cancel": "取消",
+    "confirm": "确认",
+    "viewMore": "查看更多"
+  },
+  "tokens": {
+    "hot": "热门",
+    "new": "新币",
+    "meme": "Meme",
+    "defi": "DeFi",
+    "trending": "趋势",
+    "emptyCategory": "该类别下暂无代币数据",
+    "refreshingData": "正在刷新代币数据",
+    "price": "价格",
+    "change24h": "24小时涨跌",
+    "volume24h": "24小时交易量",
+    "holders": "持有者",
+    "marketCap": "市值",
+    "chain": "区块链"
+  },
+  "kline": {
+    "priceChart": "价格图表",
+    "tradingView": "交易视图",
+    "timeframe": {
+      "5m": "5分钟",
+      "15m": "15分钟",
+      "30m": "30分钟",
+      "1h": "1小时",
+      "4h": "4小时",
+      "1d": "1天",
+      "1w": "1周"
+    }
+  }
+} 
